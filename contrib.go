@@ -18,11 +18,12 @@ var core *GitWorker
 var search *GitWorker
 
 const (
-	UserSyncPeriod   = 4
+	UserSyncPeriod   = 2
 	CommitSyncPeriod = 1
 	PRSyncPeriod     = 1
 	ItemsPerPage     = 1000
 	HuaweiOrg        = "Huawei-PaaS"
+	HTTPServerPort   = ":8989"
 )
 
 type Table struct {
@@ -65,7 +66,7 @@ type ByCommit []Record
 
 func (b ByCommit) Len() int {return len(b)}
 func (b ByCommit) Swap(i,j int) {b[i], b[j] = b[j], b[i]}
-func (b ByCommit) Less(i, j int) bool {return b[i].Commits < b[j].Commits}
+func (b ByCommit) Less(i, j int) bool {return b[i].Commits > b[j].Commits}
 
 func (T *Table) Tabulate() []Record {
 
@@ -283,6 +284,8 @@ func mainfunc() {
 
 	//Start the go sync table
 	go T.Sync()
+	//Start the webserver
+	go StartServer(T)
 
 	for {
 		select {
