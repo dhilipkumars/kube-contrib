@@ -73,7 +73,9 @@ func (T *Table) Tabulate() []Record {
 	var result []Record
 
 	for _, val := range T.Row {
-		result = append(result, *val)
+		if val.Commits > 0 {
+			result = append(result, *val)
+		}
 	}
 
 	sort.Sort(ByCommit(result))
